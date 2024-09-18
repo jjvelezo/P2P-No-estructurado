@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+service TorrentService {
+    rpc GetTorrent (TorrentRequest) returns (TorrentResponse);
+    rpc RegisterPeer (PeerRequest) returns (PeerResponse);
+    rpc SearchFile (SearchFileRequest) returns (SearchFileResponse);
+    rpc UploadFile (UploadFileRequest) returns (UploadFileResponse);
+    rpc GetFile (GetFileRequest) returns (GetFileResponse);
+}
+
+message TorrentRequest {
+    string peer_id = 1;
+    string peer_ip = 2;  // IP del peer que solicita el torrent
+}
+
+message TorrentResponse {
+    string torrent_data = 1;  // Datos del torrent, que incluye la IP del peer
+    string tracker_ip = 2;
+    string tracker_port = 3;
+}
+
+message PeerRequest {
+    string peer_id = 1;   // ID del peer
+    map<string, int32> files = 2;  // Archivos del peer en formato mapa (nombre_archivo: tamaño_archivo)
+}
+
+message PeerResponse {
+    string status = 1;
+}
+
+message SearchFileRequest {
+    string file_name = 1;
+}
+
+message SearchFileResponse {
+    repeated PeerInfo peers = 1;  // Lista de peers que tienen el archivo
+}
+
+message UploadFileRequest {
+    string file_path = 1;
+}
+
+message UploadFileResponse {
+    string status = 1;
+    string peer_id = 2;  // Peer que subió el archivo, opcional
+}
+
+message GetFileRequest {
+    string file_name = 1;
+}
+
+message GetFileResponse {
+    PeerInfo peer = 1;  // Detalles del peer que tiene el archivo
+}
+
+message PeerInfo {
+    string peer_id = 1;   // ID del peer
+    string peer_ip = 2;   // IP del peer
+    int32 peer_port = 3;  // Puerto del peer para facilitar la conexión
+}
