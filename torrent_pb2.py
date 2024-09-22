@@ -24,35 +24,43 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rtorrent.proto\"2\n\x0eTorrentRequest\x12\x0f\n\x07peer_id\x18\x01 \x01(\t\x12\x0f\n\x07peer_ip\x18\x02 \x01(\t\"Q\n\x0fTorrentResponse\x12\x14\n\x0ctorrent_data\x18\x01 \x01(\t\x12\x12\n\ntracker_ip\x18\x02 \x01(\t\x12\x14\n\x0ctracker_port\x18\x03 \x01(\t\"/\n\x0bPeerRequest\x12\x0f\n\x07peer_id\x18\x01 \x01(\t\x12\x0f\n\x07peer_ip\x18\x02 \x01(\t\"\x1e\n\x0cPeerResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\"&\n\x11SearchFileRequest\x12\x11\n\tfile_name\x18\x01 \x01(\t\".\n\x12SearchFileResponse\x12\x18\n\x05peers\x18\x01 \x03(\x0b\x32\t.PeerInfo\"&\n\x11UploadFileRequest\x12\x11\n\tfile_path\x18\x01 \x01(\t\"5\n\x12UploadFileResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07peer_id\x18\x02 \x01(\t\"#\n\x0eGetFileRequest\x12\x11\n\tfile_name\x18\x01 \x01(\t\"*\n\x0fGetFileResponse\x12\x17\n\x04peer\x18\x01 \x01(\x0b\x32\t.PeerInfo\"?\n\x08PeerInfo\x12\x0f\n\x07peer_id\x18\x01 \x01(\t\x12\x0f\n\x07peer_ip\x18\x02 \x01(\t\x12\x11\n\tpeer_port\x18\x03 \x01(\x05\x32\x8a\x02\n\x0eTorrentService\x12/\n\nGetTorrent\x12\x0f.TorrentRequest\x1a\x10.TorrentResponse\x12+\n\x0cRegisterPeer\x12\x0c.PeerRequest\x1a\r.PeerResponse\x12\x35\n\nSearchFile\x12\x12.SearchFileRequest\x1a\x13.SearchFileResponse\x12\x35\n\nUploadFile\x12\x12.UploadFileRequest\x1a\x13.UploadFileResponse\x12,\n\x07GetFile\x12\x0f.GetFileRequest\x1a\x10.GetFileResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rtorrent.proto\"2\n\x0eTorrentRequest\x12\x0f\n\x07peer_id\x18\x01 \x01(\t\x12\x0f\n\x07peer_ip\x18\x02 \x01(\t\"Q\n\x0fTorrentResponse\x12\x14\n\x0ctorrent_data\x18\x01 \x01(\t\x12\x12\n\ntracker_ip\x18\x02 \x01(\t\x12\x14\n\x0ctracker_port\x18\x03 \x01(\t\"\x85\x01\n\x0bPeerRequest\x12\x0f\n\x07peer_id\x18\x01 \x01(\t\x12\x0f\n\x07peer_ip\x18\x02 \x01(\t\x12&\n\x05\x66iles\x18\x03 \x03(\x0b\x32\x17.PeerRequest.FilesEntry\x1a,\n\nFilesEntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\x05:\x02\x38\x01\"M\n\x0cPeerResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x1c\n\rupdated_files\x18\x03 \x03(\x0b\x32\x05.File\"R\n\x04\x46ile\x12\x11\n\tfile_name\x18\x01 \x01(\t\x12\x11\n\tfile_size\x18\x02 \x01(\x03\x12\x11\n\tfile_type\x18\x03 \x01(\t\x12\x11\n\tfile_hash\x18\x04 \x01(\t\"&\n\x11SearchFileRequest\x12\x11\n\tfile_name\x18\x01 \x01(\t\".\n\x12SearchFileResponse\x12\x18\n\x05peers\x18\x01 \x03(\x0b\x32\t.PeerInfo\"J\n\x11UploadFileRequest\x12\x0f\n\x07peer_ip\x18\x01 \x01(\t\x12\x11\n\tfile_name\x18\x02 \x01(\t\x12\x11\n\tfile_size\x18\x03 \x01(\x03\"5\n\x12UploadFileResponse\x12\x0e\n\x06status\x18\x01 \x01(\t\x12\x0f\n\x07peer_id\x18\x02 \x01(\t\"#\n\x0eGetFileRequest\x12\x11\n\tfile_name\x18\x01 \x01(\t\"*\n\x0fGetFileResponse\x12\x17\n\x04peer\x18\x01 \x01(\x0b\x32\t.PeerInfo\"?\n\x08PeerInfo\x12\x0f\n\x07peer_id\x18\x01 \x01(\t\x12\x0f\n\x07peer_ip\x18\x02 \x01(\t\x12\x11\n\tpeer_port\x18\x03 \x01(\x05\"9\n\x15\x44isconnectPeerRequest\x12\x0f\n\x07peer_id\x18\x01 \x01(\t\x12\x0f\n\x07peer_ip\x18\x02 \x01(\t2\xc3\x02\n\x0eTorrentService\x12/\n\nGetTorrent\x12\x0f.TorrentRequest\x1a\x10.TorrentResponse\x12+\n\x0cRegisterPeer\x12\x0c.PeerRequest\x1a\r.PeerResponse\x12\x35\n\nSearchFile\x12\x12.SearchFileRequest\x1a\x13.SearchFileResponse\x12\x35\n\nUploadFile\x12\x12.UploadFileRequest\x1a\x13.UploadFileResponse\x12,\n\x07GetFile\x12\x0f.GetFileRequest\x1a\x10.GetFileResponse\x12\x37\n\x0eUnregisterPeer\x12\x16.DisconnectPeerRequest\x1a\r.PeerResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'torrent_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
+  _globals['_PEERREQUEST_FILESENTRY']._loaded_options = None
+  _globals['_PEERREQUEST_FILESENTRY']._serialized_options = b'8\001'
   _globals['_TORRENTREQUEST']._serialized_start=17
   _globals['_TORRENTREQUEST']._serialized_end=67
   _globals['_TORRENTRESPONSE']._serialized_start=69
   _globals['_TORRENTRESPONSE']._serialized_end=150
-  _globals['_PEERREQUEST']._serialized_start=152
-  _globals['_PEERREQUEST']._serialized_end=199
-  _globals['_PEERRESPONSE']._serialized_start=201
-  _globals['_PEERRESPONSE']._serialized_end=231
-  _globals['_SEARCHFILEREQUEST']._serialized_start=233
-  _globals['_SEARCHFILEREQUEST']._serialized_end=271
-  _globals['_SEARCHFILERESPONSE']._serialized_start=273
-  _globals['_SEARCHFILERESPONSE']._serialized_end=319
-  _globals['_UPLOADFILEREQUEST']._serialized_start=321
-  _globals['_UPLOADFILEREQUEST']._serialized_end=359
-  _globals['_UPLOADFILERESPONSE']._serialized_start=361
-  _globals['_UPLOADFILERESPONSE']._serialized_end=414
-  _globals['_GETFILEREQUEST']._serialized_start=416
-  _globals['_GETFILEREQUEST']._serialized_end=451
-  _globals['_GETFILERESPONSE']._serialized_start=453
-  _globals['_GETFILERESPONSE']._serialized_end=495
-  _globals['_PEERINFO']._serialized_start=497
-  _globals['_PEERINFO']._serialized_end=560
-  _globals['_TORRENTSERVICE']._serialized_start=563
-  _globals['_TORRENTSERVICE']._serialized_end=829
+  _globals['_PEERREQUEST']._serialized_start=153
+  _globals['_PEERREQUEST']._serialized_end=286
+  _globals['_PEERREQUEST_FILESENTRY']._serialized_start=242
+  _globals['_PEERREQUEST_FILESENTRY']._serialized_end=286
+  _globals['_PEERRESPONSE']._serialized_start=288
+  _globals['_PEERRESPONSE']._serialized_end=365
+  _globals['_FILE']._serialized_start=367
+  _globals['_FILE']._serialized_end=449
+  _globals['_SEARCHFILEREQUEST']._serialized_start=451
+  _globals['_SEARCHFILEREQUEST']._serialized_end=489
+  _globals['_SEARCHFILERESPONSE']._serialized_start=491
+  _globals['_SEARCHFILERESPONSE']._serialized_end=537
+  _globals['_UPLOADFILEREQUEST']._serialized_start=539
+  _globals['_UPLOADFILEREQUEST']._serialized_end=613
+  _globals['_UPLOADFILERESPONSE']._serialized_start=615
+  _globals['_UPLOADFILERESPONSE']._serialized_end=668
+  _globals['_GETFILEREQUEST']._serialized_start=670
+  _globals['_GETFILEREQUEST']._serialized_end=705
+  _globals['_GETFILERESPONSE']._serialized_start=707
+  _globals['_GETFILERESPONSE']._serialized_end=749
+  _globals['_PEERINFO']._serialized_start=751
+  _globals['_PEERINFO']._serialized_end=814
+  _globals['_DISCONNECTPEERREQUEST']._serialized_start=816
+  _globals['_DISCONNECTPEERREQUEST']._serialized_end=873
+  _globals['_TORRENTSERVICE']._serialized_start=876
+  _globals['_TORRENTSERVICE']._serialized_end=1199
 # @@protoc_insertion_point(module_scope)

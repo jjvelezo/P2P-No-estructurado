@@ -33,6 +33,7 @@ class Tracker:
         self.file_fragment_size = 100
 
     def register_peer(self, peer_ip, files):
+        print(f"Registrando peer con IP: {peer_ip}")  # Verifica aquí
         with self.lock:
             peer = Peer(peer_ip, files)
             self.peer_list.append(peer)
@@ -56,6 +57,11 @@ class Tracker:
                     self.replicate_file(fragments)
 
             peer.update_files(updated_files)
+            
+            # Imprimir la lista de archivos referenciados del peer
+            print(f"Lista de archivos actualizada para el peer {peer.get_ip()}: {peer.get_files()}")
+
+            return updated_files  # Devolver la lista actualizada para enviarla al peer
 
     def fragment_file(self, file_name, file_size):
         fragments = []
@@ -95,23 +101,44 @@ class Tracker:
 
     def unregister_peer(self, peer_ip):
         with self.lock:
+            print(f"Lista de peers antes de desregistrar: {[p.get_ip() for p in self.peer_list]}")
+            
             peer_to_remove = next((p for p in self.peer_list if p.get_ip() == peer_ip), None)
+        
             if peer_to_remove:
                 self.peer_list.remove(peer_to_remove)
+            
+                # Eliminar los archivos relacionados con el peer
                 for key in list(self.file_to_peers_map.keys()):
                     if peer_to_remove in self.file_to_peers_map[key]:
                         self.file_to_peers_map[key].remove(peer_to_remove)
-                        if not self.file_to_peers_map[key]:
+                    
+                        if not self.file_to_peers_map[key]:  # Si no hay más peers con el archivo, eliminar el archivo del tracker
                             del self.file_to_peers_map[key]
+                            print(f"Archivo {key} completamente eliminado del tracker.")
+                        
                 print(f"Peer {peer_ip} eliminado de la red.")
+            else:
+                print(f"Peer {peer_ip} no encontrado.")
+                
+        # Código para desregistrar...
+        print(f"Lista de peers después de desregistrar: {[p.get_ip() for p in self.peer_list]}")
 
 class TorrentService(torrent_pb2_grpc.TorrentServiceServicer):
     def __init__(self):
         self.tracker = Tracker()
 
     def RegisterPeer(self, request, context):
-        self.tracker.register_peer(request.peer_ip, request.files)
-        return torrent_pb2.PeerResponse(status="Registered successfully")
+        updated_files = self.tracker.register_peer(request.peer_ip, request.files)
+    
+        # Crear la respuesta del peer con los archivos actualizados
+        response = torrent_pb2.PeerResponse(status="Registered successfully")
+    
+        # Añadir los archivos actualizados a la respuesta
+        for file_name, file_size in updated_files.items():
+            response.updated_files.add(file_name=file_name, file_size=file_size)
+    
+        return response
 
     def SearchFile(self, request, context):
         peers = self.tracker.search_file(request.file_name)
@@ -119,12 +146,34 @@ class TorrentService(torrent_pb2_grpc.TorrentServiceServicer):
             return torrent_pb2.SearchFileResponse()  # Enviar respuesta vacía si no se encuentra el archivo
         response = torrent_pb2.SearchFileResponse()
         for peer in peers:
-            response.peers.add(peer_id="", peer_ip=peer.get_ip())  # Se puede omitir peer_id si no es necesario
+            response.peers.add(peer_ip=peer.get_ip())  # Solo se usa peer_ip
         return response
 
     def UnregisterPeer(self, request, context):
-        self.tracker.unregister_peer(request.peer_ip)
+        peer_ip = request.peer_ip
+        if not any(peer.get_ip() == peer_ip for peer in self.tracker.peer_list):
+            return torrent_pb2.PeerResponse(status="Peer not found")
+
+        self.tracker.unregister_peer(peer_ip)
         return torrent_pb2.PeerResponse(status="Unregistered successfully")
+    
+    def UploadFile(self, request, context):
+        peer_ip = request.peer_ip
+        file_name = request.file_name
+        file_size = request.file_size
+        print(f"Received upload request: {file_name} from {peer_ip} (size: {file_size})")
+    
+        return torrent_pb2.UploadFileResponse(status="Upload successful")  # Retorna solo el estado
+    
+    def GetFile(self, request, context):
+        file_name = request.file_name
+        peers = self.tracker.search_file(file_name)
+        if not peers:
+            return torrent_pb2.GetFileResponse()  # Devolver respuesta vacía si no se encuentra el archivo
+        # Asumiendo que se devuelva el primer peer que tiene el archivo
+        peer_info = peers[0]
+        return torrent_pb2.GetFileResponse(peer=torrent_pb2.PeerInfo(peer_ip=peer_info.get_ip()))  # Solo se usa peer_ip
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

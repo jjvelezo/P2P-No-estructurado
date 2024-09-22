@@ -6,6 +6,7 @@ service TorrentService {
     rpc SearchFile (SearchFileRequest) returns (SearchFileResponse);
     rpc UploadFile (UploadFileRequest) returns (UploadFileResponse);
     rpc GetFile (GetFileRequest) returns (GetFileResponse);
+    rpc UnregisterPeer (DisconnectPeerRequest) returns (PeerResponse);
 }
 
 message TorrentRequest {
@@ -21,11 +22,21 @@ message TorrentResponse {
 
 message PeerRequest {
     string peer_id = 1;   // ID del peer
-    map<string, int32> files = 2;  // Archivos del peer en formato mapa (nombre_archivo: tamaño_archivo)
+    string peer_ip = 2;   // IP del peer
+    map<string, int32> files = 3;  // Archivos que tiene el peer
 }
 
 message PeerResponse {
-    string status = 1;
+    string status = 1;     // Ej: "Success", "Error"
+    string message = 2;    // Mensaje opcional para detalles adicionales
+    repeated File updated_files = 3; // Archivos actualizados del peer
+}
+
+message File {
+    string file_name = 1;
+    int64 file_size = 2;   // Tamaño del archivo (int64 para archivos grandes)
+    string file_type = 3;   // Ej: "video", "audio", etc.
+    string file_hash = 4;   // Hash para verificar la integridad del archivo
 }
 
 message SearchFileRequest {
@@ -37,12 +48,14 @@ message SearchFileResponse {
 }
 
 message UploadFileRequest {
-    string file_path = 1;
+    string peer_ip = 1;      // IP del peer que sube el archivo
+    string file_name = 2;    // Nombre del archivo
+    int64 file_size = 3;     // Tamaño del archivo (int64 para archivos grandes)
 }
 
 message UploadFileResponse {
-    string status = 1;
-    string peer_id = 2;  // Peer que subió el archivo, opcional
+    string status = 1;       // Ej: "Success", "Error"
+    string peer_id = 2;      // Peer que subió el archivo, opcional
 }
 
 message GetFileRequest {
@@ -57,4 +70,9 @@ message PeerInfo {
     string peer_id = 1;   // ID del peer
     string peer_ip = 2;   // IP del peer
     int32 peer_port = 3;  // Puerto del peer para facilitar la conexión
+}
+
+message DisconnectPeerRequest {
+    string peer_id = 1;  // ID del peer
+    string peer_ip = 2;  // IP del peer
 }

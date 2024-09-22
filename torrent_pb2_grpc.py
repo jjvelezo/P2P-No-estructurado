@@ -59,6 +59,11 @@ class TorrentServiceStub(object):
                 request_serializer=torrent__pb2.GetFileRequest.SerializeToString,
                 response_deserializer=torrent__pb2.GetFileResponse.FromString,
                 _registered_method=True)
+        self.UnregisterPeer = channel.unary_unary(
+                '/TorrentService/UnregisterPeer',
+                request_serializer=torrent__pb2.DisconnectPeerRequest.SerializeToString,
+                response_deserializer=torrent__pb2.PeerResponse.FromString,
+                _registered_method=True)
 
 
 class TorrentServiceServicer(object):
@@ -94,6 +99,12 @@ class TorrentServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def UnregisterPeer(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TorrentServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -121,6 +132,11 @@ def add_TorrentServiceServicer_to_server(servicer, server):
                     servicer.GetFile,
                     request_deserializer=torrent__pb2.GetFileRequest.FromString,
                     response_serializer=torrent__pb2.GetFileResponse.SerializeToString,
+            ),
+            'UnregisterPeer': grpc.unary_unary_rpc_method_handler(
+                    servicer.UnregisterPeer,
+                    request_deserializer=torrent__pb2.DisconnectPeerRequest.FromString,
+                    response_serializer=torrent__pb2.PeerResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -258,6 +274,33 @@ class TorrentService(object):
             '/TorrentService/GetFile',
             torrent__pb2.GetFileRequest.SerializeToString,
             torrent__pb2.GetFileResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def UnregisterPeer(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/TorrentService/UnregisterPeer',
+            torrent__pb2.DisconnectPeerRequest.SerializeToString,
+            torrent__pb2.PeerResponse.FromString,
             options,
             channel_credentials,
             insecure,
