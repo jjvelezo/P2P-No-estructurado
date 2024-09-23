@@ -101,14 +101,61 @@ def search_file():
     if tracker_stub:
         file_name = input("Nombre del archivo para obtener: ")
         response = tracker_stub.GetFile(torrent_pb2.GetFileRequest(file_name=file_name))
-        # Verifica si hay peers en la respuesta y luego intenta imprimir la IP.
-        if response.HasField("peer"):  # Verifica si la respuesta tiene el campo 'peer'
-            print(f"Archivo encontrado")
+        
+        print(response)
+        # Verifica si hay peers en la respuesta
+        if response.peers:  # Verifica si la lista de peers no está vacía
+            print(f"Archivo '{file_name}' encontrado en los siguientes peers:")
+            peer_ips = []
+            for peer in response.peers:
+                print(f"Archivo encontrado en el Peer con el IP: {peer.peer_ip}")
+                peer_ips.append(peer.peer_ip)
+            
+            # Mostrar el menú adicional para conectarse o volver al menú de búsqueda
+            connection_menu(peer_ips)
         else:
             print("Archivo no encontrado.")
     else:
         print("No conectado al tracker.")
 
+# Menú para conectarse a un peer o volver al menú de búsqueda
+def connection_menu(peer_ips):
+    while True:
+        print("\n¿Qué deseas hacer?")
+        print("1. Conectarse a un Peer")
+        print("2. Volver al menú de búsqueda")
+        option = input("Ingresa tu opción: ")
+
+        if option == "1":
+            connect_to_peer(peer_ips)
+        elif option == "2":
+            return  # Vuelve al menú principal de búsqueda
+        else:
+            print("Opción no válida. Intenta de nuevo.")
+
+# Función para conectarse a un peer
+def connect_to_peer(peer_ips):
+    if not peer_ips:
+        print("No hay peers disponibles para conectarse.")
+        return
+    
+    # Mostrar la lista de peers disponibles
+    print("\nPeers disponibles para conectarse:")
+    for i, ip in enumerate(peer_ips):
+        print(f"{i+1}. {ip}")
+    
+    # Seleccionar un peer
+    try:
+        choice = int(input("Selecciona el número del Peer con el que deseas conectarte: "))
+        if 1 <= choice <= len(peer_ips):
+            peer_ip = peer_ips[choice - 1]
+            print(f"Conectando al Peer con IP: {peer_ip}...")
+            # Aquí puedes agregar la lógica para conectarte al peer
+            # Por ejemplo, iniciar una conexión TCP o HTTP con el peer
+        else:
+            print("Selección no válida. Intenta de nuevo.")
+    except ValueError:
+        print("Entrada no válida. Debes ingresar un número.")
 
 def run():
     tracker_ip, tracker_port = connect_to_web_server()  # Conectar al Web Server y obtener los datos del tracker
