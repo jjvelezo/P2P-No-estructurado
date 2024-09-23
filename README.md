@@ -24,6 +24,7 @@ Este proyecto desarrolla un sistema de comunicación Peer-to-Peer (P2P) no estru
 - Manejo de Concurrencia en la red.
 - Manejor de Varias Solicitudes al Tiempo.
 - Uso de gRPC para la comunicación.
+- Despliegue y Pruebas en AWS.
 
 
 
