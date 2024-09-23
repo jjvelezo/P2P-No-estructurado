@@ -40,13 +40,13 @@ Este proyecto desarrolla un sistema de comunicación Peer-to-Peer (P2P) no estru
 
 Este proyecto implementa una arquitectura Peer-to-Peer no estructurada con un enfoque en la eficiencia y robustez de la comunicación, usando gRPC para la interacción entre nodos. Cada nodo puede actuar tanto como cliente como servidor, facilitando una red descentralizada donde los peers se registran en un tracker centralizado para localizar archivos pero gestionan la transferencia de archivos directamente entre ellos.
 
-###Arquitectura y patrones:
+**Arquitectura y patrones:**
 - **Peer-to-Peer No Estructurado:** Cada peer se registra en un tracker centralizado que facilita la búsqueda de archivos pero no interviene en la transferencia directa de archivos.
 - **Comunicación Directa entre Peers:** Una vez que un archivo es localizado mediante el tracker, los peers involucrados establecen una conexión directa para la transferencia de archivos.
 
 - **Cliente-Servidor:** Utilizado para la interacción entre los peers y el tracker para registrar y buscar información.
 
-### Mejores prácticas:
+**Mejores prácticas:**
 - **Separación de responsabilidades:** Clara distinción entre la lógica de la interfaz de usuario y la lógica de manejo de red para mantener el código organizado y mantenible.
 
 
@@ -97,7 +97,7 @@ Correr en cada PC: `python torrent.py/webserver.py/peernodo.py`
 
 ### Como se lanza el servidor:
 
-``python3 -m venv venv`
+`python3 -m venv venv`
 `source venv/bin/activate`
 `pip install grpcio grpcio-tools`
 `nano tracker.py/webserver`
@@ -107,7 +107,7 @@ Correr en cada PC: `python torrent.py/webserver.py/peernodo.py`
 
 ### Mini guía de usuario:
 
-####1.Corre: `"peernodo.py"`:
+**1.Corre: `"peernodo.py"`:**
 
 'Menu:
 1. Conectar al Tracker
@@ -117,7 +117,7 @@ Correr en cada PC: `python torrent.py/webserver.py/peernodo.py`
 5. Salir'
 
 
-####2.Subir Archivos:
+**2.Subir Archivos:**
 
 'Ingresa tu opción: `2`
 Ingresa el nombre del archivo a agregar: file3
@@ -125,7 +125,7 @@ Ingrese el tamaño del archivo en MB: `200`
 Archivo 'file3' con tamaño 200 MB agregado a la lista del peer.'
 
 
-####3.Ver lista de archivos:
+**3.Ver lista de archivos:**
 
 'Menu:
 1. Conectar al Tracker
@@ -140,7 +140,7 @@ Lista de archivos del peer:
 
 
 
-####4.Conexion al tracker:
+**4.Conexion al tracker:**
 
 'Menu:
 1. Conectar al Tracker
@@ -160,8 +160,7 @@ updated_files {
 }
 '
 
-
-####4. Buscar archivo:
+**5. Buscar archivo:**
 
 'Menú del Tracker:
 1. Buscar archivo
@@ -173,7 +172,7 @@ Recibiendo archivo...
 Archivo recibido!'
 
 
-####5. Desconexión del Tarcker
+**6. Desconexión del Tracker**
 
 'Menú del Tracker:
 1. Buscar archivo
