@@ -80,7 +80,7 @@ Correr en cada PC: `python torrent.py/webserver.py/peernodo.py`
 
 ### Estructura de directorios y archivos importantes del proyecto:
 
-/
+> /
 |-- tracker.py
 |-- peernodo.py
 |-- webserver.py
