@@ -15,7 +15,7 @@ def connect_to_web_server():
     local_ip = get_local_ip()  # Obtener IP local
 
     # Organización IP del Web Server
-    with grpc.insecure_channel('3.85.118.197:50051') as web_server_channel:
+    with grpc.insecure_channel('54.242.48.213:50051') as web_server_channel:
         web_server_stub = torrent_pb2_grpc.TorrentServiceStub(web_server_channel)
         response = web_server_stub.GetTorrent(torrent_pb2.TorrentRequest(peer_ip=local_ip))
         tracker_ip = response.tracker_ip
@@ -26,25 +26,27 @@ def connect_to_web_server():
 # Conexión con el Tracker
 def connect_to_tracker(tracker_ip, tracker_port, peer_files):
     global tracker_channel, tracker_stub
-    local_ip = get_local_ip()  # Obtener IP local automáticamente
+    local_ip = get_local_ip()
 
-    # Construir el canal gRPC usando la dirección IP y el puerto recibidos desde el Web Server
+    # Construir el canal gRPC usando la dirección IP y el puerto
     tracker_address = f"{tracker_ip}:{tracker_port}"
     tracker_channel = grpc.insecure_channel(tracker_address)
 
     # Crear el stub para la conexión con el Tracker
     tracker_stub = torrent_pb2_grpc.TorrentServiceStub(tracker_channel)
 
-    # Convertir peer_files a un diccionario
-    file_dict = {file['name']: int(file['size']) for file in peer_files}  # Asegúrate de que el tamaño sea un entero
+    # Convertir peer_files a una lista de archivos, asegurándote de que no se utilice .items()
+    file_list = [torrent_pb2.File(file_name=file['name'], file_size=file['size']) for file in peer_files]
 
     # Registrar el peer en el tracker usando su IP local y la lista de archivos
     response = tracker_stub.RegisterPeer(
         torrent_pb2.PeerRequest(
-            peer_ip= local_ip,
-            files=file_dict
+            peer_ip=local_ip,
+            files=file_list
         )
     )
+
+    print("Peer registrado con éxito:", response)
 
     # Actualizar la lista de archivos si hay archivos actualizados
     if response.updated_files:
@@ -64,7 +66,11 @@ def connect_to_tracker(tracker_ip, tracker_port, peer_files):
         print("No files to upload or Tracker connection issue.")
 
 def update_peer_files(updated_files):
-    global peer_files  # Asegúrate de declarar peer_files como global
+    global peer_files
+    
+    # Vaciar la lista de archivos del peer antes de actualizarla
+    peer_files.clear()
+    
     for file in updated_files:
         # Solo agregar archivos que no estén ya en la lista
         if not any(f['name'] == file.file_name for f in peer_files):

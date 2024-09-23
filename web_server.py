@@ -10,7 +10,7 @@ TORRENT_DATA = {
 
 # Configura aquí la IP y puerto del tracker
 TRACKER_INFO = {
-    "tracker_ip": "3.235.66.108",  # IP del tracker
+    "tracker_ip": "3.85.241.152",  # IP del tracker
     "tracker_port": "50052"  # Puerto del tracker
 }
 

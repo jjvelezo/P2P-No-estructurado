@@ -23,7 +23,7 @@ message TorrentResponse {
 message PeerRequest {
     string peer_id = 1;   // ID del peer
     string peer_ip = 2;   // IP del peer
-    map<string, int32> files = 3;  // Archivos que tiene el peer
+    repeated File files = 3;  // Lista de archivos que tiene el peer
 }
 
 message PeerResponse {

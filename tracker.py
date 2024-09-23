@@ -40,19 +40,25 @@ class Tracker:
             print(f"Peer registrado: {peer.get_ip()}")
 
             updated_files = {}
-            for file, file_size in files.items():
-                original_file_name = file
+            # Iterar sobre los archivos recibidos (RepeatedCompositeContainer o diccionario)
+            for file in files:
+                file_name = file.file_name  # Asegúrate de que file tiene los atributos correctos
+                file_size = file.file_size
+                original_file_name = file_name
                 suffix = 1
-                while file in self.file_to_peers_map:
-                    file = f"{original_file_name}_dup{suffix}"
+                while file_name in self.file_to_peers_map:
+                    file_name = f"{original_file_name}_dup{suffix}"
                     suffix += 1
 
-                fragments = self.fragment_file(file, file_size)
+                # Fragmentar el archivo
+                fragments = self.fragment_file(file_name, file_size)
+                updated_files[file_name] = fragments  # Guardar los fragmentos en lugar del archivo completo
+
+                # Asociar fragmentos con el peer
                 for fragment in fragments:
-                    self.file_to_peers_map[fragment].append(peer)
+                    self.file_to_peers_map[fragment['name']].append(peer)
 
-                updated_files[file] = file_size
-
+                # Replicar fragmentos si es necesario
                 if len(self.peer_list) >= self.replication_threshold:
                     self.replicate_file(fragments)
 
@@ -69,10 +75,19 @@ class Tracker:
             fragment_count = math.ceil(file_size / self.file_fragment_size)
             for i in range(fragment_count):
                 fragment_size = min(self.file_fragment_size, file_size - (i * self.file_fragment_size))
-                fragments.append(f"{file_name}_part{i}_size{fragment_size}MB")
+                
+                # Guardar el fragmento como un diccionario con nombre y tamaño separados
+                fragments.append({
+                    'name': f"{file_name}_part{i}",
+                    'size': fragment_size
+                })
             print(f"Archivo '{file_name}' fragmentado en {fragment_count} partes.")
         else:
-            fragments.append(file_name)
+            fragments.append({
+                'name': file_name,
+                'size': file_size
+            })
+        print(f"Fragmentos: {fragments}")
         return fragments
 
     def replicate_file(self, fragments):
@@ -106,6 +121,16 @@ class Tracker:
             peer_to_remove = next((p for p in self.peer_list if p.get_ip() == peer_ip), None)
         
             if peer_to_remove:
+                
+                # Imprimir los archivos asociados al peer antes de eliminarlo
+                archivos_ligados = [key for key, peers in self.file_to_peers_map.items() if peer_to_remove in peers]
+                if archivos_ligados:
+                    print(f"Archivos ligados al peer {peer_ip} antes de eliminar:")
+                    for archivo in archivos_ligados:
+                        print(f"- {archivo}")
+                else:
+                    print(f"No hay archivos ligados al peer {peer_ip}.")
+                
                 self.peer_list.remove(peer_to_remove)
             
                 # Eliminar los archivos relacionados con el peer
@@ -130,13 +155,15 @@ class TorrentService(torrent_pb2_grpc.TorrentServiceServicer):
 
     def RegisterPeer(self, request, context):
         updated_files = self.tracker.register_peer(request.peer_ip, request.files)
-    
+
         # Crear la respuesta del peer con los archivos actualizados
         response = torrent_pb2.PeerResponse(status="Registered successfully")
-    
-        # Añadir los archivos actualizados a la respuesta
-        for file_name, file_size in updated_files.items():
-            response.updated_files.add(file_name=file_name, file_size=file_size)
+
+        # Añadir los archivos fragmentados a la respuesta
+        for file_name, file_fragments in updated_files.items():
+            for fragment in file_fragments:
+                # Asegurarte de que estás accediendo a los atributos correctos del fragmento
+                response.updated_files.add(file_name=fragment['name'], file_size=fragment['size'])  # Usar fragment['name'] y fragment['size']
     
         return response
 
