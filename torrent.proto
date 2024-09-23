@@ -55,7 +55,8 @@ message UploadFileRequest {
 
 message UploadFileResponse {
     string status = 1;       // Ej: "Success", "Error"
-    string peer_id = 2;      // Peer que subió el archivo, opcional
+    string file_name = 2;    // Nombre del archivo que se está entregando
+    string peer_id = 3;      // Peer que subió el archivo, opcional
 }
 
 message GetFileRequest {
