@@ -63,15 +63,15 @@ Este proyecto implementa una arquitectura Peer-to-Peer no estructurada con un en
 ### Como se compila y ejecuta:
 
 - En AWS, se debe crear un entorno virtual y ejecutar:
-'python3 -m venv venv
-source venv/bin/activate
-pip install grpcio grpcio-tools'
+`python3 -m venv venv
+`source venv/bin/activate`
+`pip install grpcio grpcio-tools``
 
 - Para compilar y ejecutar se debe poner:
-'nano tracker.py/webserver'
-nano torrent.proto'
-'python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. torrent.proto'
-Correr en cada PC: python torrent.py/webserver.py/peernodo.py
+`nano tracker.py/webserver`
+`nano torrent.proto`
+`python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. torrent.proto`
+Correr en cada PC: `python torrent.py/webserver.py/peernodo.py`
 
 ### Detalles técnicos y configuración de parámetros del proyecto:
 
@@ -97,22 +97,90 @@ Correr en cada PC: python torrent.py/webserver.py/peernodo.py
 
 ### Como se lanza el servidor:
 
-'python3 -m venv venv
-source venv/bin/activate
-pip install grpcio grpcio-tools
-nano tracker.py/webserver
-nano torrent.proto'
-python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. torrent.proto'
- python torrent.py/webserver.py/peernodo.py'
+``python3 -m venv venv`
+`source venv/bin/activate`
+`pip install grpcio grpcio-tools`
+`nano tracker.py/webserver`
+`nano torrent.proto`
+`python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. torrent.proto`
+`python torrent.py/webserver.py/peernodo.py`
 
 ### Mini guía de usuario:
 
-1.Corre: 'peernodo.py'
+####1.Corre: `"peernodo.py"`:
+
+'Menu:
+1. Conectar al Tracker
+2. Agregar archivo a la lista del peer  
+3. Eliminar archivo de la lista del peer
+4. Ver Lista del Peer
+5. Salir'
 
 
-2. Sube Archivos
+####2.Subir Archivos:
 
-3. Conexion al tracker
+'Ingresa tu opción: `2`
+Ingresa el nombre del archivo a agregar: file3
+Ingrese el tamaño del archivo en MB: `200`
+Archivo 'file3' con tamaño 200 MB agregado a la lista del peer.'
+
+
+####3.Ver lista de archivos:
+
+'Menu:
+1. Conectar al Tracker
+2. Agregar archivo a la lista del peer
+3. Eliminar archivo de la lista del peer
+4. Ver Lista del Peer
+5. Salir
+Ingresa tu opción: `4`
+
+Lista de archivos del peer:
+- file3 (Size: 200)'
+
+
+
+####4.Conexion al tracker:
+
+'Menu:
+1. Conectar al Tracker
+2. Agregar archivo a la lista del peer
+3. Eliminar archivo de la lista del peer
+4. Ver Lista del Peer
+5. Salir
+Ingresa tu opción: `1`
+Peer registrado con éxito: status: "Registered successfully"
+updated_files {
+  file_name: "file3_part0"
+  file_size: 100
+}
+updated_files {
+  file_name: "file3_part1"
+  file_size: 100
+}
+'
+
+
+####4. Buscar archivo:
+
+'Menú del Tracker:
+1. Buscar archivo
+2. Salir del Tracker
+Ingresa tu opción: `1`
+Nombre del archivo para obtener: `file2`
+Preguntando a 192.168.20.85 por el archivo 'file2'...
+Recibiendo archivo...
+Archivo recibido!'
+
+
+####5. Desconexión del Tarcker
+
+'Menú del Tracker:
+1. Buscar archivo
+2. Salir del Tracker
+Ingresa tu opción: `2`
+Respuesta del tracker: Unregistered successfully
+Peer desconectado del Tracker y canal cerrado.'
 
 ## 5. Otra información relevante para esta actividad.
 
@@ -137,5 +205,3 @@ python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. torrent.prot
 - https://www.britannica.com/technology/P2P
 - https://revistas.unisimon.edu.co/index.php/innovacioning/article/view/2021/4678
 - https://www.alotceriot.com/es/comprension-de-la-comunicacion-entre-pares-una-guia-completa/#:~:text=La%20comunicaci%C3%B3n%20entre%20pares%20
-
-
