@@ -63,7 +63,7 @@ message GetFileRequest {
 }
 
 message GetFileResponse {
-    PeerInfo peer = 1;  // Detalles del peer que tiene el archivo
+    repeated PeerInfo peers = 1;  // Lista de peers que tienen el archivo o fragmentos
 }
 
 message PeerInfo {
