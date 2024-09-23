@@ -76,3 +76,7 @@ message DisconnectPeerRequest {
     string peer_id = 1;  // ID del peer
     string peer_ip = 2;  // IP del peer
 }
+
+service PeerFileService {
+    rpc GetFile (GetFileRequest) returns (UploadFileResponse);
+}

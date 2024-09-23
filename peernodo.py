@@ -76,18 +76,45 @@ def disconnect_from_tracker():
         print("No conectado al tracker.")
 
 # Función de búsqueda
+# def search_file():
+#     if tracker_stub:
+#         file_name = input("Nombre del archivo para obtener: ")
+#         response = tracker_stub.GetFile(torrent_pb2.GetFileRequest(file_name=file_name))
+        
+#         if response.peers:  # Verifica si hay peers
+#             print(f"Archivo '{file_name}' encontrado en los siguientes peers:")
+#             peer_ips = []
+#             for peer in response.peers:
+#                 print(f"Archivo encontrado en el Peer con IP: {peer.peer_ip}")
+#                 peer_ips.append(peer.peer_ip)
+#             connection_menu(peer_ips)
+#         else:
+#             print("Archivo no encontrado.")
+#     else:
+#         print("No conectado al tracker.")
+
 def search_file():
     if tracker_stub:
         file_name = input("Nombre del archivo para obtener: ")
         response = tracker_stub.GetFile(torrent_pb2.GetFileRequest(file_name=file_name))
         
-        if response.HasField("peers"):  # Verifica si hay peers
-            print(f"Archivo '{file_name}' encontrado en los siguientes peers:")
-            peer_ips = []
+        if response.peers:
             for peer in response.peers:
-                print(f"Archivo encontrado en el Peer con IP: {peer.peer_ip}")
-                peer_ips.append(peer.peer_ip)
-            connection_menu(peer_ips)
+                peer_ip = peer.peer_ip
+                print(f"Preguntando a {peer_ip} por el archivo '{file_name}'...")
+                
+                # Conectar al peer y solicitar el archivo
+                with grpc.insecure_channel(f'{peer_ip}:50053') as channel:
+                    peer_stub = torrent_pb2_grpc.PeerFileServiceStub(channel)
+                    file_response = peer_stub.GetFile(torrent_pb2.GetFileRequest(file_name=file_name))
+                    
+                    print("Recibiendo archivo...")
+                    if file_response.status == "Success":
+                        print("Archivo recibido!")
+                        # Aquí actualiza la lista del peer con el archivo recibido
+                    else:
+                        print("Error al recibir el archivo.")
+                break  # Solo solicitamos a un peer por ahora
         else:
             print("Archivo no encontrado.")
     else:
@@ -140,23 +167,44 @@ class TorrentService(torrent_pb2_grpc.TorrentServiceServicer):
         response.peers.add(peer_ip=get_local_ip())  # Ejemplo de peer encontrado
         return response
 
+# def serve():
+#     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+#     torrent_pb2_grpc.add_TorrentServiceServicer_to_server(TorrentService(), server)
+#     server.add_insecure_port('[::]:50053')
+#     server.start()
+#     print("Servidor gRPC escuchando en el puerto 50053...")
+#     try:
+#         while True:
+#             time.sleep(86400)  # Mantener el servidor corriendo
+#     except KeyboardInterrupt:
+#         server.stop(0)
+
+# Clase para manejar las solicitudes de otros peers
+class PeerFileService(torrent_pb2_grpc.PeerFileServiceServicer):
+    def GetFile(self, request, context):
+        file_name = request.file_name
+        print(f"Solicitud del peer con IP {context.peer()} busca archivo {file_name}...")
+        
+        # Simula la entrega del archivo
+        time.sleep(2)  # Simula un retraso en la entrega
+        print("Entregando archivo...")
+        
+        # Aquí deberías implementar la lógica para enviar el archivo real
+        return torrent_pb2.UploadFileResponse(status="Success", file_name=file_name)
+
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    torrent_pb2_grpc.add_TorrentServiceServicer_to_server(TorrentService(), server)
+    torrent_pb2_grpc.add_PeerFileServiceServicer_to_server(PeerFileService(), server)
     server.add_insecure_port('[::]:50053')
     server.start()
-    print("Servidor gRPC escuchando en el puerto 50053...")
-    try:
-        while True:
-            time.sleep(86400)  # Mantener el servidor corriendo
-    except KeyboardInterrupt:
-        server.stop(0)
+    print("Servidor de archivos del peer escuchando en el puerto 50053...")
+    server.wait_for_termination()
 
 def run():
-    tracker_ip, tracker_port = connect_to_web_server()  # Conectar al Web Server
     server_thread = threading.Thread(target=serve)
     server_thread.start()
-
+    tracker_ip, tracker_port = connect_to_web_server()  # Conectar al Web Server
+    
     global tracker_channel, tracker_stub
     tracker_channel = None
     tracker_stub = None
