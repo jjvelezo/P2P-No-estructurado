@@ -183,7 +183,7 @@ Peer desconectado del Tracker y canal cerrado.'
 
 ## 5. Otra información relevante para esta actividad.
 
-<Incluya cualquier otra información que considere relevante para comprender o utilizar el proyecto.>
+Este proyecto fue desarrollado como parte de la asignatura, donde se exploró el uso de tecnologías de comunicación modernas como gRPC para crear una red P2P.
 
 
 # Referencias:
